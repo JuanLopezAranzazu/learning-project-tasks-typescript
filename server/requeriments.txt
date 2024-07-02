@@ -1,0 +1,15 @@
+npm i
+
+devDependencies
+
+npm i nodemon -D
+
+dependencies
+
+npm i express
+npm i dotenv
+npm i cors
+npm i jsonwebtoken
+npm i mongoose
+npm i bcrypt
+npm i validator
