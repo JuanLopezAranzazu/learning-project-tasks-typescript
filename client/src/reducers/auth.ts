@@ -19,9 +19,11 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    // Función para establecer el usuario
     setUser: (state, action: PayloadAction<RawUser | null>) => {
       state.user = action.payload;
     },
+    // Función para establecer el token
     setToken: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
     },
