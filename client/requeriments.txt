@@ -7,3 +7,4 @@ dependencies
 npm i react-router-dom
 npm i axios
 npm i redux react-redux redux-persist @reduxjs/toolkit
+npm i react-toastify

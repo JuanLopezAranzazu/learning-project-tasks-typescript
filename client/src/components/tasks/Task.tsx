@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { RawTask } from "../../types/Task";
-import axios from "./../../api/axios";
 import { useDispatch, useSelector } from "react-redux";
-import { removeTask } from "../../reducers/task";
 import { RootAuthState } from "../../reducers/auth";
+import { removeTask } from "../../reducers/task";
+import { deleteTask } from "../../services/Task";
 
 type TaskProps = {
   task: RawTask;
@@ -14,16 +14,11 @@ export const Task = ({ task }: TaskProps) => {
   const { token } = useSelector((state: RootAuthState) => state.auth);
   const dispatch = useDispatch();
 
-  // Función para iniciar sesión
-  const deleteTask = async (taskId: string) => {
-    try {
-      const response = await axios.delete(`/tasks/${taskId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(response?.data);
+  // Función para eliminar una tarea
+  const handleClickRemove = async (taskId: string) => {
+    const response = await deleteTask(taskId, token!);
+    if (response) {
       dispatch(removeTask(taskId));
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -34,7 +29,7 @@ export const Task = ({ task }: TaskProps) => {
       </Link>
       <p>{task.description}</p>
       <p>{task.priority}</p>
-      <button type="button" onClick={() => deleteTask(task._id)}>
+      <button type="button" onClick={() => handleClickRemove(task._id)}>
         Eliminar
       </button>
     </div>

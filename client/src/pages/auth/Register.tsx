@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "./../../api/axios";
 import { UserData } from "../../types/User";
+import { registerUser } from "../../services/Auth";
 
 type FormData = {
   password: string;
@@ -21,13 +21,10 @@ export const Register = () => {
   const navigate = useNavigate();
 
   // Función para registrar un usuario
-  const registerUser = async (data: FormData) => {
-    try {
-      const response = await axios.post("/auth/register", data);
-      console.log(response?.data);
+  const handleRegisterUserSubmit = async (data: FormData) => {
+    const response = await registerUser(data);
+    if (response) {
       navigate("/login");
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -80,7 +77,7 @@ export const Register = () => {
       console.log("Formulario inválido");
       return;
     }
-    registerUser(formValues);
+    handleRegisterUserSubmit(formValues);
   };
 
   return (

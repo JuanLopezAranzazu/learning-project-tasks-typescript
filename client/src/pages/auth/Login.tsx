@@ -1,18 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "./../../api/axios";
 import { useDispatch } from "react-redux";
 import { setUser, setToken } from "./../../reducers/auth";
-
-type FormValues = {
-  email: string;
-  password: string;
-};
-
-type FormErrors = {
-  email: string;
-  password: string;
-};
+import { LoginData } from "../../types/User";
+import { loginUser } from "../../services/Auth";
 
 const initialValues = {
   email: "",
@@ -21,22 +12,18 @@ const initialValues = {
 
 // Componente para iniciar sesión
 export const Login = () => {
-  const [formValues, setFormValues] = useState<FormValues>(initialValues);
-  const [formErrors, setFormErrors] = useState<FormErrors>(initialValues);
+  const [formValues, setFormValues] = useState<LoginData>(initialValues);
+  const [formErrors, setFormErrors] = useState<LoginData>(initialValues);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // Función para iniciar sesión
-  const loginUser = async (credentials: FormValues) => {
-    try {
-      const response = await axios.post("/auth/login", credentials);
-      console.log(response?.data);
-      const { token, user } = response.data;
-      dispatch(setUser(user));
-      dispatch(setToken(token));
+  const handleLoginUserSubmit = async (credentials: LoginData) => {
+    const response = await loginUser(credentials);
+    if (response) {
+      dispatch(setUser(response.user));
+      dispatch(setToken(response.token));
       navigate("/");
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -70,7 +57,7 @@ export const Login = () => {
   };
 
   // Función para validar el formulario
-  const validateForm = (errors: FormErrors): boolean => {
+  const validateForm = (errors: LoginData): boolean => {
     let valid = true;
     Object.values(errors).forEach((val) => val.length > 0 && (valid = false));
     return valid;
@@ -83,7 +70,7 @@ export const Login = () => {
       console.log("Formulario inválido");
       return;
     }
-    loginUser(formValues);
+    handleLoginUserSubmit(formValues);
   };
 
   return (

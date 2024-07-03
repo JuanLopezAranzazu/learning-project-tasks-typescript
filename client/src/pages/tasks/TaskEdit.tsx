@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { RawTask, TaskData } from "../../types/Task";
 import { TaskForm } from "../../components/tasks/TaskForm";
-import axios from "./../../api/axios";
 import { useSelector, useDispatch } from "react-redux";
 import { updateTask } from "../../reducers/task";
 import { RootAuthState } from "../../reducers/auth";
+import { getTask, updateTask as editTask } from "../../services/Task";
 
 // Componente para editar una tarea
 export const TaskEdit = () => {
@@ -17,17 +17,11 @@ export const TaskEdit = () => {
   const navigate = useNavigate();
 
   // Función para obtener una tarea
-  const getTask = async () => {
+  const fetchTask = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/tasks/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response?.data;
-      console.log(data);
-      setTask(data);
+      const response = await getTask(id, token!);
+      setTask(response);
     } catch (error) {
       console.error(error);
     } finally {
@@ -36,24 +30,16 @@ export const TaskEdit = () => {
   };
 
   // Función para editar una tarea
-  const editTask = async (id: string, taskData: TaskData) => {
-    try {
-      const response = await axios.put(`/tasks/${id}`, taskData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = response?.data;
-      console.log(data);
-      dispatch(updateTask(data));
-      navigate("..");
-    } catch (error) {
-      console.error(error);
+  const handleEditTaskSubmit = async (id: string, taskData: TaskData) => {
+    const response = await editTask(id, taskData, token!);
+    if (response) {
+      dispatch(updateTask(response));
+      navigate("/");
     }
   };
 
   useEffect(() => {
-    getTask();
+    fetchTask();
   }, []);
 
   return (
@@ -63,7 +49,7 @@ export const TaskEdit = () => {
         <div>Cargando...</div>
       ) : (
         <TaskForm
-          onSubmit={(data) => editTask(id, data)}
+          onSubmit={(data) => handleEditTaskSubmit(id, data)}
           title={task.title}
           description={task.description}
           priority={task.priority}

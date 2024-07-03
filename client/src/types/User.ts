@@ -8,7 +8,7 @@ export type RawUser = {
   _id: string;
 } & UserData;
 
-export type Login = {
+export type LoginData = {
   email: string;
   password: string;
 };
